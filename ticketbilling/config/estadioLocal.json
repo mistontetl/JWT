@@ -1,0 +1,7 @@
+{
+   "host":"localhost",
+   "user":"postgres",
+   "password":"12345",
+   "database":"bdsqlautfacdev",
+   "port":"5432"
+}
