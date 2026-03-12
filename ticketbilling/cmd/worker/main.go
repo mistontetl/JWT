@@ -4,11 +4,10 @@ import (
 	//	"context"
 	//	"fmt"
 	"log"
-	"os"
-
 	//	"time"
 
 	conexion "portal_autofacturacion/conexiones"
+	"portal_autofacturacion/config"
 	"portal_autofacturacion/data/queue"
 	"portal_autofacturacion/domain/worker"
 
@@ -60,10 +59,11 @@ func main() {
 	// ─────────────────────────────────────────────
 	// WORKER
 	// ─────────────────────────────────────────────
+	runtimeConfig := config.LoadWorkerRuntimeConfig()
+
 	invoiceWorker := worker.NewInvoiceWorker(
 		queueClient,
-		"ESTADIO", //
-		"PAC",
+		runtimeConfig,
 		db,
 	)
 
@@ -78,13 +78,6 @@ func main() {
 	select {}
 }
 
-func getenv(key, def string) string {
-	if v := os.Getenv(key); v != "" {
-		return v
-	}
-	return def
-}
-
 /*package main
 
 import (
@@ -96,6 +89,7 @@ import (
 	"time"
 
 	conexion "portal_autofacturacion/conexiones"
+"portal_autofacturacion/config"
 	"portal_autofacturacion/data/queue"
 	"portal_autofacturacion/migrations"
 	"portal_autofacturacion/models"
@@ -178,6 +172,7 @@ import (
 	"log"
 
 	conexion "portal_autofacturacion/conexiones"
+"portal_autofacturacion/config"
 	ticket_service "portal_autofacturacion/domain/ticket/service"
 )
 
