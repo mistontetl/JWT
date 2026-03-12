@@ -8,6 +8,7 @@ import (
 	"math"
 	"os"
 
+	"portal_autofacturacion/config"
 	"portal_autofacturacion/data/queue"
 	"portal_autofacturacion/domain/api/repository"
 	pac_service "portal_autofacturacion/domain/pac"
@@ -36,12 +37,11 @@ type invoiceWorker struct {
 
 func NewInvoiceWorker(
 	client queue.RSGQueue,
-	ticketConfig string,
-	pacConfig string,
-	db any, //
+	runtimeConfig config.WorkerRuntimeConfig,
+	db *gorm.DB,
 ) invoiceWorker {
-	conexion := db.(*gorm.DB)
-	mode := os.Getenv("WORKER_MODE")
+	conexion := db
+	mode := runtimeConfig.Mode
 
 	var billingRepo repository.BillingRequestRepository
 	var ticketRepo repository.TicketStoreRepository
@@ -61,8 +61,8 @@ func NewInvoiceWorker(
 		Conexion:         conexion,
 		sem:              make(chan struct{}, MaxConcurrentJobs),
 		client:           client,
-		TicketDataSource: ticket_service.NewTicketDataSource(ticketConfig, conexion),
-		PacDataSource:    pac_service.NewPacDataSource(pacConfig),
+		TicketDataSource: ticket_service.NewTicketDataSource(runtimeConfig.TicketSource, conexion),
+		PacDataSource:    pac_service.NewPacDataSource(runtimeConfig.PacProvider),
 	}
 }
 
@@ -407,6 +407,7 @@ import (
 	"os"
 	"time"
 
+	"portal_autofacturacion/config"
 	"portal_autofacturacion/data/queue"
 	"portal_autofacturacion/domain/api/repository"
 	pac_service "portal_autofacturacion/domain/pac"
@@ -814,6 +815,7 @@ import (
 	"os"
 
 	"gorm.io/gorm"
+	"portal_autofacturacion/config"
 	"portal_autofacturacion/data/queue"
 	"portal_autofacturacion/domain/api/repository"
 	pac_service "portal_autofacturacion/domain/pac"
